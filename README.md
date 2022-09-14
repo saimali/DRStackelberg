@@ -1,6 +1,6 @@
 # DRStackelberg
 
-This repository contains all the code used in our paper "Computing the Optimal Distributionally-Robust Strategy to Commit to" by Sai Mali Ananthanarayanan and Christisan Kroer.
+This repository contains all the code used in our paper "Computing the Optimal Distributionally-Robust Strategy to Commit to" by Sai Mali Ananthanarayanan and Christian Kroer.
 
 The “gamut” folder contains the installation of gamut. Check http://gamut.stanford.edu/ to install gamut and required dependencies.
 
