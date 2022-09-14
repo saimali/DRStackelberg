@@ -1,0 +1,20 @@
+#GAMUT v1.0
+#Thu Dec 11 15:23:08 PST 2003
+StarGraph=
+NDimensionalGrid=
+RandomGraph=
+RoadGraph=
+CompleteGraph=
+RingGraph=
+SmallWorldGraph=
+NDimensionalWrappedGrid=
+NAryTree=
+BAGraph=
+PLODGraph=
+
+#Graphs that can be used with graphical/LEGs
+
+GraphWithNodeParam=CompleteGraph, RandomGraph, RoadGraph, StarGraph, SmallWorldGraph
+
+
+

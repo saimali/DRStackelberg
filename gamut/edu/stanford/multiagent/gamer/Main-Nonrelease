@@ -1,0 +1,280 @@
+package edu.stanford.multiagent.gamer;
+
+import java.util.*;
+import java.lang.reflect.*;
+import java.io.*;
+
+
+// FOR EXPERIMENTAL PURPOSES -- REMOVE THESE LATER!!!!!
+import malearning.*;
+import edu.stanford.multiagent.nashportfolio.*;
+// END EXPERIMENTAL PART
+
+/**
+ *The main class for the GameR
+ */
+
+public class Main
+{
+    // Made public so that the parameter info can be accessed by
+    // the help function in Global -- Might want to find a way
+    // around this
+    public static Parameters.ParamInfo[] globalParamInfo;
+    private static Parameters.ParamInfo pSeed;
+    private static Parameters.ParamInfo pGame;
+    private static Parameters.ParamInfo pFilename;
+    private static Parameters.ParamInfo pRandomize;
+    private static Parameters.ParamInfo pOut;
+
+    // FOR EXPERIMENTAL PURPOSES -- DELETE THESE LATER
+    private static Parameters.ParamInfo pLearn;
+    private static Parameters.ParamInfo pRounds;
+    private static Parameters.ParamInfo pLearningOut;
+    private static Parameters.ParamInfo pRepetitions;
+    private static Parameters.ParamInfo pGenFeatures;
+    private static Parameters.ParamInfo pFeatureFile;
+    // END EXPERIMENTAL PART
+
+    // -- Global Parameters
+    static {
+	pSeed=new Parameters.ParamInfo("random_seed", Parameters.ParamInfo.LONG_PARAM, new Long(0), new Long(Long.MAX_VALUE), "random seed, uses current time by default.");
+
+	pGame = new Parameters.ParamInfo("g", Parameters.ParamInfo.STRING_PARAM, null, null, "the name of the game to generate");
+
+	pFilename = new Parameters.ParamInfo("f", Parameters.ParamInfo.STRING_PARAM, null, null, "output file name");
+
+	pRandomize = new Parameters.ParamInfo("random_params", Parameters.ParamInfo.BOOLEAN_PARAM, null, null, "randomize unset parameters in default ranges",false, Boolean.FALSE);
+
+	pOut = new Parameters.ParamInfo("output", Parameters.ParamInfo.STRING_PARAM, null, null, "the name of the outputter to use. (Default: SimpleOutput)",false,"SimpleOutput");
+
+
+	// FOR EXPERIMENTAL PURPOSES, REMOVE THIS SECTION LATER
+
+	pLearn = new Parameters.ParamInfo("do_ma_learning", Parameters.ParamInfo.BOOLEAN_PARAM, null, null, "if set, performs malearning",false, Boolean.FALSE);
+
+	pRounds = new Parameters.ParamInfo("rounds", Parameters.ParamInfo.LONG_PARAM, new Long(0), new Long(Long.MAX_VALUE), "number of rounds of learning, defaults to 100,000.", false, new Long(100000));
+
+	pRepetitions = new Parameters.ParamInfo("repetitions", Parameters.ParamInfo.LONG_PARAM, new Long(0), new Long(Long.MAX_VALUE), "number of repetitions of learning, defaults to 10.", false, new Long(10));
+
+	pLearningOut = new Parameters.ParamInfo("lfile",  Parameters.ParamInfo.STRING_PARAM, null, null, "the file where the learning output should go",false,"learn.out");
+
+	pGenFeatures = new Parameters.ParamInfo("features", Parameters.ParamInfo.BOOLEAN_PARAM, null, null, "if set, perform feature calculation",false, Boolean.FALSE);
+
+	pFeatureFile = new Parameters.ParamInfo("feature_file",  Parameters.ParamInfo.STRING_PARAM, null, null, "the file where the feature output should go",false,"features.out");
+
+	// END EXPERIMENTAL SECTION
+
+
+	globalParamInfo = new Parameters.ParamInfo[] 
+	    {pSeed, pGame, pFilename, pRandomize, pOut, Game.intPayoffs, 
+	     Game.intMult, Game.pNormalize, Game.pMinPayoff, 
+	     Game.pMaxPayoff, pLearn, pRounds, pLearningOut, pRepetitions, 
+	     pGenFeatures, pFeatureFile};
+
+	Global.params=new Parameters(globalParamInfo);
+    }
+
+
+    /**
+     * Main
+     */
+    public static void main(String[] args)
+    {
+	if(args.length<1)
+	    {
+		System.out.println(Global.getHelp());
+		System.exit(1);
+	    }
+
+
+	// -- Store the command line for posterity
+	Global.gArgs = new String[args.length];
+	System.arraycopy(args,0,Global.gArgs,0,args.length);
+
+
+	// -- pre-parse parameters
+	ParamParser p=null;
+
+	try {
+	    p = new ParamParser(args);
+
+	    Global.params.setFromParser(p);
+	    
+	} catch (Exception e) {
+	    System.err.println(e.getMessage());
+	    System.err.println(Global.getHelp());
+	    System.exit(1);
+	}
+
+
+	// -- set the random seed
+	Global.randSeed = ( Global.params.isParamSet(pSeed.name) ? 
+			    Global.params.getLongParameter(pSeed.name) :
+			    System.currentTimeMillis() );
+
+	Global.rand=new Random(Global.randSeed);
+
+	System.err.println("RAND SEED: " + Global.randSeed);
+
+	// -- Get Outputter Name
+	String outName;
+	/*	outName = ( params.isParamSet(pOut.name) ? 
+		    params.getStringParameter(pOut.name) :
+		    "SimpleOutput" );*/
+	outName = Global.params.getStringParameter(pOut.name);
+
+	// -- Instantiate the game
+
+	String gName=null;
+	boolean randomizingGame=false;
+
+	if(!Global.params.isParamSet(pGame.name))
+	    {
+		if(!Global.params.getBooleanParameter(pRandomize.name))
+		    {
+			System.err.println("ERROR: -g is the required parameter!");
+			System.err.println(Global.getHelp());
+			System.exit(1);
+		    }
+		else
+		    try {
+			randomizingGame=true;
+			gName =Global.getRandomClass(Global.GAME);
+		    } catch (Exception e) {
+			Global.handleError(e, "Randomizing Game");
+		    }
+	    }
+	else
+	    {
+		gName=Global.params.getStringParameter(pGame.name);
+		randomizingGame = !Global.isGround(Global.GAME, gName);
+	    }
+
+	String sOutFile=null;
+	sOutFile = ( Global.params.isParamSet(pFilename.name) ? Global.params.getStringParameter(pFilename.name) : gName + ".game" );
+
+	// Make sure that the min_payoff and max_payoff params are set
+	// only if the normalize param is set and that max_payoff
+	// is greater than min_payoff if they are set
+	if (Global.params.getBooleanParameter(Game.pNormalize.name)) {
+	    if (!Global.params.isParamSet(Game.pMinPayoff.name)) {
+ 		System.err.println(Global.getHelp());
+		Global.handleError("Must set param min_payoff when " +
+				   "normalization feature is in use.");
+	    }
+	    if (!Global.params.isParamSet(Game.pMaxPayoff.name)) {
+ 		System.err.println(Global.getHelp());
+		Global.handleError("Must set param max_payoff when " +
+				   "normalization feature is in use.");
+	    }
+	    if (Global.params.getDoubleParameter(Game.pMinPayoff.name) >=
+		Global.params.getDoubleParameter(Game.pMaxPayoff.name)) {
+ 		System.err.println(Global.getHelp());
+		Global.handleError("minpayoff >= max_payoff");
+	    }
+	} else {
+	    if (Global.params.isParamSet(Game.pMinPayoff.name)) {
+ 		System.err.println(Global.getHelp());
+		Global.handleError("min_payoff should not be set when " +
+				   "normalization is not in use");
+	    }
+	    if (Global.params.isParamSet(Game.pMaxPayoff.name)) {
+ 		System.err.println(Global.getHelp());
+		Global.handleError("max_payoff should not be set when " +
+				   "normalization is not in use");
+	    }
+	}
+
+	Game g=null;
+	g = (Game) Global.getObjectOrDie(gName, Global.GAME);
+
+	// -- set all parameters and initialize
+	try {
+	    boolean rp = Global.params.getBooleanParameter(pRandomize.name);
+	    g.setParameters(p, rp);
+	    g.initialize();
+	} catch (Exception e) {
+	    System.err.println("ERROR: Initializing " + gName);
+	    System.err.println(e.getMessage());
+	    System.err.println(Global.getHelp());
+	    System.err.println(g.getHelp());
+	    System.exit(1);
+	}
+
+	//-- Check that no unknown parameters are passed
+	//-- Turn this off for random games - since they might have different
+	//-- Arguments
+	if(!randomizingGame && p.hasUnusedArgs())
+	    {
+ 		System.err.println("ERROR: Unknown arguments: ");
+ 		String[] a=p.getUnusedArgs();
+ 		for(int i=0; i<a.length; i++)
+ 		    System.err.println(a[i]);
+ 		System.err.println(Global.getHelp());
+ 		System.err.println(g.getHelp());
+ 		System.exit(1);
+	    }
+
+ 
+	// -- Generate an instance
+	try {
+	    g.generate();
+	} catch (Exception e) {
+	    System.err.println("Failed to generate an instance");
+	    System.err.println(e.getMessage());
+	    System.exit(1);
+	} 
+
+	// -- Do the output
+	PrintWriter out;
+	GameOutput outputter = (GameOutput) 
+	    Global.getObjectOrDie(outName, Global.OUTPUT);
+	try {
+	    FileWriter fw = new FileWriter(sOutFile);
+	    out = new PrintWriter(fw, true);
+	    outputter.writeGame(out, g);
+	} catch (Exception e) {
+	    System.err.println("Output failed!");
+	    System.err.println(e.getMessage());
+	    System.exit(1);
+	}
+
+
+	//
+	// FOR EXPERIMENTAL PURPOSES -- REMOVE THIS LATER
+	//
+
+	boolean doLearningTests = 
+	    Global.params.getBooleanParameter(pLearn.name);
+
+	if (doLearningTests) {
+	    String lfile = Global.params.getStringParameter(pLearningOut.name);
+	    GameControl gc = new GameControl(lfile);
+	    
+	    long rounds = Global.params.getLongParameter(pRounds.name);
+	    long repetitions = 
+		Global.params.getLongParameter(pRepetitions.name);
+
+	    try {
+		gc.runSelfPlay(g, rounds, repetitions);
+	    } catch (Exception e) {
+		Global.handleError(e, "Error from Learning Tests");
+	    }
+	}
+
+	boolean doFeatureGen = 
+	    Global.params.getBooleanParameter(pGenFeatures.name);
+
+	if (doFeatureGen) {
+	    String featureFile = 
+		Global.params.getStringParameter(pFeatureFile.name);
+	    FeatureSet features = new FeatureSet(g);
+	    features.outputFeatures(featureFile);
+	}
+
+	// END EXPERIMENTAL SECTIONS
+    }
+
+
+}
+

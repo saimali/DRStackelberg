@@ -1,0 +1,127 @@
+#GAMUT v1.0
+#Mon Apr 05 15:22:29 PDT 2004
+
+#Basic generators
+
+MajorityVoting=
+TravelersDilemma=
+RockPaperScissors=
+SimpleInspectionGame=
+LocationGame=
+PolymatrixGame=
+RandomZeroSum=
+BertrandOligopoly=
+RandomCompoundGame=
+ArmsRace=
+PrisonersDilemma=
+GreedyGame=
+Chicken=
+DispersionGame=
+CollaborationGame=
+RandomGraphicalGame=
+TwoByTwoGame=
+BattleOfTheSexes=
+CournotDuopoly=
+NPlayerPrisonersDilemma=
+BidirectionalLEG=
+CongestionGame=
+MatchingPennies=
+HawkAndDove=
+RandomLEG=
+GuessTwoThirdsAve=
+UniformLEG=
+CovariantGame=
+GrabTheDollar=
+WarOfAttrition=
+NPlayerChicken=
+CoordinationGame=
+RandomGame=
+MinimumEffortGame=
+ShapleysGame=
+
+
+#The following classes are used for default randomization
+
+#Class of games that are action-extensible
+#Useful for polymatrix games
+GameWithActionParam= MajorityVoting, TravelersDilemma, LocationGame, PolymatrixGame, RandomZeroSum, BertrandOligopoly, DispersionGame, RandomGraphicalGame, CournotDuopoly, BidirectionalLEG, RandomLEG, GuessTwoThirdsAve, UniformLEG, CovariantGame, GrabTheDollar, WarOfAttrition, RandomGame, MinimumEffortGame
+
+#Class of games that are player-extensible in a nice way
+GameWithPlayerParam= BertrandOligopoly, BidirectionalLEG, CollaborationGame, CongestionGame, CoordinationGame, CovariantGame, DispersionGame, GuessTwoThirdsAve, MajorityVoting, MinimumEffortGame, NPlayerChicken, NPlayerPrisonersDilemma, PolymatrixGame, RandomGame, RandomCompoundGame, RandomLEG, RandomGraphicalGame, TravelersDilemma, UniformLEG
+
+#Similar as above but for two player/or two action games
+Game2PlayerOrParam= GameWithPlayerParam, BattleOfTheSexes, Chicken, CournotDuopoly, GrabTheDollar, HawkAndDove, LocationGame, MatchingPennies, PrisonersDilemma, RandomZeroSum, RockPaperScissors, TwoByTwoGame, WarOfAttrition
+
+Game2ActionOrParam= GameWithActionParam, BattleOfTheSexes, CollaborationGame, CoordinationGame, HawkAndDove, MatchingPennies, NPlayerChicken, NPlayerPrisonersDilemma, PrisonersDilemma, RandomCompoundGame, TwoByTwoGame
+
+#The following to classes were used for original Gamut paper
+OriginalPaperNPlayerDist= DispersionGame, MinimumEffortGame, RandomGame, TravelersDilemma, BertrandOligopoly, PolymatrixGame-SW, PolymatrixGame-RG, PolymatrixGame-Road, PolymatrixGame-CG, UniformLEG-RG, UniformLEG-CG, UniformLEG-SG, BidirectionalLEG-RG, BidirectionalLEG-CG, BidirectionalLEG-SG, GraphicalGame-RG, GraphicalGame-SG, GraphicalGame-Road, GraphicalGame-SW, CovariantGame-Pos, CovariantGame-Zero, CovariantGame-Rand
+
+OritinalPaper2PlayerDist = OriginalPaperNPlayerDist, LocationGame, WarOfAttrition, CovariantGame-Neg
+
+#Classes with some parameters preset
+
+PolymatrixGame-SW= [ PolymatrixGame -graph SmallWorldGraph -subgame RandomGame]
+PolymatrixGame-RG= [ PolymatrixGame  -graph RandomGraph -subgame RandomGame -graph_params [ -sym_edges]  ]
+PolymatrixGame-Road= [ PolymatrixGame  -graph RoadGraph -subgame RandomGame ]
+PolymatrixGame-CG= [ PolymatrixGame  -graph CompleteGraph -subgame RandomGame ]
+
+UniformLEG-RG= [ UniformLEG  -graph RandomGraph -graph_params [ -reflex_ok 0 -sym_edges]  ]
+UniformLEG-CG= [ UniformLEG  -graph CompleteGraph -graph_params [ -reflex_ok 0 -sym_edges]  ]
+UniformLEG-SG= [ UniformLEG  -graph StarGraph -graph_params [ -reflex_ok 0 -sym_edges]  ]
+
+BidirectionalLEG-RG= [ BidirectionalLEG  -graph RandomGraph -graph_params [ -reflex_ok 0 -sym_edges]  ]
+BidirectionalLEG-CG= [ BidirectionalLEG  -graph CompleteGraph -graph_params [ -reflex_ok 0 -sym_edges]  ]
+BidirectionalLEG-SG= [ BidirectionalLEG  -graph StarGraph -graph_params [ -reflex_ok 0 -sym_edges]  ]
+
+GraphicalGame-RG= [ RandomGraphicalGame  -graph RandomGraph -graph_params [ -reflex_ok 0 -sym_edges]  ]
+GraphicalGame-SG= [ RandomGraphicalGame  -graph StarGraph -graph_params [ -reflex_ok 0 -sym_edges]  ]
+GraphicalGame-Road= [ RandomGraphicalGame  -graph RoadGraph -graph_params [ -reflex_ok 0 -sym_edges]  ]
+GraphicalGame-SW= [ RandomGraphicalGame  -graph SmallWorldGraph -graph_params [ -reflex_ok 0 -sym_edges]  ]
+
+CovariantGame-Neg= [ CovariantGame -r -0.9   ]
+CovariantGame-Pos= [ CovariantGame -r 0.9   ]
+CovariantGame-Zero= [ CovariantGame -r 0   ]
+
+#Taxonomy for games
+
+SymmetricTwoByTwo= BattleOfTheSexes, Chicken, HawkAndDove, PrisonersDilemma
+
+ClassicalMatrixgame= BattleOfTheSexes, MatchingPennies, PrisonersDilemma, HawkAndDove, Chicken, RockPaperScissors, CollaborationGame, CoordinationGame
+
+CompactlyRepresentable= BidirectionalLEG, PolymatrixGame, UniformLEG, RandomLEG, CoordinationGame, GraphicalGame-Road
+
+CompleteOpposition= RockPaperScissors, MatchingPennies, SimpleInspectionGame, GreedyGame, RandomZeroSum, GeometricGame
+
+CompoundGame= NPlayerChicken, NPlayerPrisonersDilemma, RandomCompoundGame
+
+CongestionGameClass= BidirectionalLEG, UniformLEG, DispersionGame, CongestionGame
+
+CoordinationGameClass= MinimumEffortGame, CollaborationGame, BattleOfTheSexes
+
+DominanceSolvableEq= TravelersDilemma, PrisonersDilemma, NPlayerPrisonersDilemma, SupermodularGames
+
+DominantStrategies= PrisonersDilemma, TravelersDilemma, NPlayerPrisonersDilemma
+
+ESSGames= SymmetricTwoByTwo
+
+GeometricGame= MatchingPennies, GreedyGame, SimpleInspectionGame
+
+NoDominantStrategies= MatchingPennies, BattleOfTheSexes, DispersionGame, RockPaperScissors
+
+NoPSNE= MatchingPennies, SimpleInspectionGame, RockPaperScissors
+
+PotentialGameClass= CongestionGameClass
+
+PSNEGameClass= CoordinationGameClass, PotentialGameClass, DominanceSolvableEq, BertrandOligopoly, Chicken, ArmsRace, CournotDuopoly
+
+StrictEqGameClass= NPlayerPrisonersDilemma, HawkAndDove, PrisonersDilemma, SupermodularGames, LocationGame, MatchingPennies
+
+SupermodularGames= CournotDuopoly, BertrandOligopoly, ArmsRace
+
+StronglySymmetricGames= ESSGames, UniformLEG, BidirectionalLEG, Chicken, SymmetricTwoByTwo, CompoundGame, ArmsRace, BattleOfTheSexes, NPlayerPrisonersDilemma, MatchingPennies, NPlayerChicken, PrisonersDilemma, RandomLEG
+
+WeaklySymmetricGames= StronglySymmetricGames
+
+UniqueNEGames= DominanceSolvableEq, GuessTwoThirdsAve
+

@@ -1,0 +1,23 @@
+
+TODO LIST:
+
+- Allow input from file
+
+- It would be nice if random graphical games allowed players 
+	to have varying numbers of actions
+
+- Add more normal form games
+	- Potential games
+	- SAT games
+	- Network games
+	- others?
+
+- Add framework for extensive form games plus some samples
+
+- Can normalization be made more efficient?
+
+- In some games have only implemented the one version of 
+	getPayoff where a payoff for a single player is calculated.  
+	Should go back and see if it would be more efficient in 
+	some of these to calculate all payoffs at once.
+

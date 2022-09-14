@@ -1,0 +1,8 @@
+#GAMUT v1.0
+#Tue Apr 06 12:52:45 PDT 2004
+GambitOutput=
+GTOutput=
+SimpleOutput=
+SpecialOutput=
+TwoPlayerOutput=
+DoubleOutput=

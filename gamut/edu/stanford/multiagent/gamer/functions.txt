@@ -1,0 +1,14 @@
+#GAMUT v1.0
+#Thu Apr 29 13:39:53 PDT 2004
+IncreasingPoly=
+ConcaveTableFunction=
+SlowlyIncreasingFunction=LogFunction, IncreasingPoly
+DecreasingWrapper=
+ConcaveFunction=LogFunction, ConcaveTableFunction
+IncreasingFunction=ExpFunction, LogFunction, IncreasingPoly, IncreasingTableFunction
+IncreasingTableFunction=
+LogFunction=
+PolyFunction=
+DecreasingFunction=DecreasingWrapper
+TableFunction=
+ExpFunction=
