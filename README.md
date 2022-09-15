@@ -8,4 +8,4 @@ Install a version of Gurobi 8.1.1. or higher and related dependencies to run the
 
 Install Python 3.7 or higher preferably to run the code
 
-To generate any figure, run funcFile_arxiv.py and the corresponding figure file- Figure1_arxiv.py, FigureA1_appendix_arxiv.py, FigureA2_appendix.arxiv.py
+To generate any figure, run funcFile_arxiv.py and the corresponding figure file- Figure1_arxiv.py, FigureA1_appendix_arxiv.py, FigureA2_appendix_arxiv.py
